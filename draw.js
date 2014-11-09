@@ -8,13 +8,18 @@ var
   });
 
 rl.on('line', function (cmd) {
-  var req = http.request({
-    host: '127.0.0.1',
-    port: 1337
-  }, function (res) {
+  var options = {
+    hostname: 'localhost',
+    port: 1337,
+    path: '/',
+    method: 'POST'
+  };
+
+  var req = http.request(options, function (res) {
     res.setEncoding('utf8');
+
     res.on('data', function (chunk) {
-      console.log('JSON.parse(chunk)[1]', JSON.parse(chunk)[1]);
+      console.log(chunk);
 
       rl.prompt(true);
     })
@@ -24,9 +29,13 @@ rl.on('line', function (cmd) {
     console.log('problem with request: ' + e.message);
   });
 
+  req.write(cmd);
+
   req.end();
 });
 
-rl.setPrompt('enter command: ');
+readline.cursorTo(process.stdout, 0, 0);
+readline.clearScreenDown(process.stdout);
 
+rl.setPrompt('enter command: ');
 rl.prompt(true);

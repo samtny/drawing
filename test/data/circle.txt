@@ -1,0 +1,9 @@
+enter command: Cir 6 2 2
+----------------------
+|    xxx             |
+|   x   x            |
+|   x   x            |
+|    xxx             |
+----------------------
+
+enter command: Q

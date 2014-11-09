@@ -1,21 +1,32 @@
 var
   http = require('http'),
+  drawd = require('./drawd'),
   readline = require('readline'),
-  interface = readline.createInterface({
+  rl = readline.createInterface({
     input: process.stdin,
     output: process.stdout
-  })
+  });
 
-interface.question('yo', function (answer) {
-  console.log('yo back');
+rl.on('line', function (cmd) {
+  var req = http.request({
+    host: '127.0.0.1',
+    port: 1337
+  }, function (res) {
+    res.setEncoding('utf8');
+    res.on('data', function (chunk) {
+      console.log('JSON.parse(chunk)[1]', JSON.parse(chunk)[1]);
 
-  interface.close()
+      rl.prompt(true);
+    })
+  });
+
+  req.on('error', function (e) {
+    console.log('problem with request: ' + e.message);
+  });
+
+  req.end();
 });
 
-exports.server = http.createServer(function (req, res) {
-  res.writeHead(200, {'Content-Type': 'text/plain'});
-  res.end('Hello World\n');
-})//.listen(1337, '127.0.0.1');
-//console.log('Server running at http://127.0.0.1:1337/');
+rl.setPrompt('enter command: ');
 
-
+rl.prompt(true);

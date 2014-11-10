@@ -65,7 +65,7 @@ var send = function (cmd) {
   var options = {
     hostname: 'localhost',
     port: 1337,
-    path: '/',
+    path: '/canvas',
     method: 'POST'
   };
 

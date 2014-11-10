@@ -47,7 +47,7 @@ _.each(test_data, function (test_item) {
   var options = {
     hostname: 'localhost',
     port: 1337,
-    path: '/',
+    path: '/canvas',
     method: 'POST'
   };
 
@@ -70,6 +70,8 @@ _.each(test_data, function (test_item) {
 
         if (complete == test_data.length) {
           drawd.server.close();
+
+          process.exit();
         }
       }
     });

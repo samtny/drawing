@@ -7,7 +7,8 @@ var
   DrawingError = require('./lib/DrawingError'),
   Canvas = require('./lib/Canvas'),
   Line = require('./lib/Line'),
-  Rectangle = require('./lib/Rectangle');
+  Rectangle = require('./lib/Rectangle'),
+  Bucket = require('./lib/Bucket');
 
 var canvas = null;
 
@@ -29,7 +30,7 @@ var drawd = function (req, res) {
       try {
         var args = cmd.toString().split(' ');
 
-        switch (args[0]) {
+        switch (args[0].toUpperCase()) {
           case 'C':
             canvas = new Canvas(args.slice(1));
             break;
@@ -48,6 +49,19 @@ var drawd = function (req, res) {
               var rectangle = new Rectangle(args.slice(1));
 
               rectangle.draw(canvas);
+            }
+            else {
+              drawd.respond('Create a new Canvas first', 400);
+            }
+            break;
+          case 'B':
+            if (canvas != null) {
+              var bucket = new Bucket(args.slice(1));
+
+              bucket.draw(canvas);
+            }
+            else {
+              drawd.respond('Create a new Canvas first', 400);
             }
             break;
           default:

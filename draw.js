@@ -92,6 +92,7 @@ var quit = function () {
 
 var sendLine = function (cmd) {
   switch (cmd) {
+    case 'q':
     case 'Q':
       quit();
       break;

@@ -3,16 +3,20 @@
 var
   http = require('http'),
   _ = require('underscore'),
+  DrawingResponse = require('./lib/DrawingResponse'),
   DrawingError = require('./lib/DrawingError'),
-  Canvas = require('./lib/Canvas');
+  Canvas = require('./lib/Canvas'),
+  Line = require('./lib/Line'),
+  Rectangle = require('./lib/Rectangle');
 
 var canvas = null;
 
 var drawd = function (req, res) {
   var drawd = this;
 
-  drawd.respond = function (body, code) {
-    res.writeHead(code || 200, {'Content-Type': 'application/json'});
+  drawd.respond = function (body, code, ctype) {
+    res.writeHead(code || 200, {'Content-Type': ctype || 'application/json'});
+
     res.end(JSON.stringify(body));
   };
 
@@ -31,10 +35,19 @@ var drawd = function (req, res) {
             break;
           case 'L':
             if (canvas != null) {
-              canvas.draw(new Line(args.slice(1)));
+              var line = new Line(args.slice(1));
+
+              line.draw(canvas);
             }
             else {
               drawd.respond('Create a new Canvas first', 400);
+            }
+            break;
+          case 'R':
+            if (canvas != null) {
+              var rectangle = new Rectangle(args.slice(1));
+
+              rectangle.draw(canvas);
             }
             break;
           default:
@@ -45,7 +58,7 @@ var drawd = function (req, res) {
       }
       catch (e) {
         if (e instanceof DrawingError) {
-          drawd.respond(e.message, 400);
+          drawd.respond(e.message, 400, 'text/plain');
         }
         else {
           throw e;

@@ -3,7 +3,6 @@
 var
   http = require('http'),
   drawd = require('./drawd'),
-  canvas = null,
   readline = require('readline'),
   rl = readline.createInterface({
     input: process.stdin,
@@ -48,40 +47,60 @@ var printCanvas = function (chunk) {
   }
 };
 
+var requestCallback = function (res) {
+  res.setEncoding('utf8');
+
+  res.on('data', function (chunk) {
+    if (res.statusCode === 200) {
+      printCanvas(chunk);
+    } else {
+      console.log(chunk);
+    }
+
+    rl.prompt(true);
+  });
+};
+
+var send = function (cmd) {
+  var options = {
+    hostname: 'localhost',
+    port: 1337,
+    path: '/',
+    method: 'POST'
+  };
+
+  var req = http.request(options, requestCallback);
+
+  req.on('error', function (e) {
+    console.log('problem with request: ' + e.message);
+  });
+
+  req.write(cmd);
+
+  req.end();
+};
+
+var noop = function () {
+  rl.prompt(true);
+};
+
+var quit = function () {
+  drawd.server.close(function () {
+    rl.close();
+  });
+};
+
 var sendLine = function (cmd) {
-  if (cmd !== 'Q') {
-    var options = {
-      hostname: 'localhost',
-      port: 1337,
-      path: '/',
-      method: 'POST'
-    };
-
-    var req = http.request(options, function (res) {
-      res.setEncoding('utf8');
-
-      res.on('data', function (chunk) {
-        if (res.statusCode === 200) {
-          printCanvas(chunk);
-        } else {
-          console.log(chunk);
-        }
-
-        rl.prompt(true);
-      });
-    });
-
-    req.on('error', function (e) {
-      console.log('problem with request: ' + e.message);
-    });
-
-    req.write(cmd);
-
-    req.end();
-  } else {
-    drawd.server.close(function () {
-      rl.close();
-    })
+  switch (cmd) {
+    case 'Q':
+      quit();
+      break;
+    case '':
+      noop();
+      break;
+    default:
+      send(cmd);
+      break;
   }
 };
 

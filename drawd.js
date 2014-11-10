@@ -33,12 +33,14 @@ var drawd = function (req, res) {
         switch (args[0].toUpperCase()) {
           case 'C':
             canvas = new Canvas(args.slice(1));
+            drawd.respond(canvas);
             break;
           case 'L':
             if (canvas != null) {
               var line = new Line(args.slice(1));
 
               line.draw(canvas);
+              drawd.respond(canvas);
             }
             else {
               drawd.respond('Create a new Canvas first', 400);
@@ -49,6 +51,7 @@ var drawd = function (req, res) {
               var rectangle = new Rectangle(args.slice(1));
 
               rectangle.draw(canvas);
+              drawd.respond(canvas);
             }
             else {
               drawd.respond('Create a new Canvas first', 400);
@@ -59,16 +62,18 @@ var drawd = function (req, res) {
               var bucket = new Bucket(args.slice(1));
 
               bucket.draw(canvas);
+              drawd.respond(canvas);
             }
             else {
               drawd.respond('Create a new Canvas first', 400);
             }
             break;
+          case 'Q':
+            drawd.respond('', 200);
+            break;
           default:
             break;
         }
-
-        drawd.respond(canvas);
       }
       catch (e) {
         if (e instanceof DrawingError) {

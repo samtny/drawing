@@ -67,14 +67,14 @@ _.each(test_data, function (test_item) {
         assert.equal(joined, reference);
 
         complete += 1;
-
-        if (complete == test_data.length) {
-          drawd.server.close();
-
-          process.exit();
-        }
       }
     });
+
+    res.on('close', function () {
+      if (complete == test_data.length) {
+        drawd.server.close();
+      }
+    })
   };
 
   var req = http.request(options, validate);

@@ -5,9 +5,8 @@ var
   url = require('url'),
   Canvas = require('./lib/Canvas'),
   ToolBox = require('./lib/ToolBox'),
-  DrawingError = require('./lib/DrawingError');
-
-var canvas = null;
+  DrawingError = require('./lib/DrawingError'),
+  canvas = null;
 
 var drawd = function (req, res) {
   var drawd = this,
@@ -38,7 +37,7 @@ var drawd = function (req, res) {
 
           break;
         case 'Q':
-          canvas = null;
+          process.exit();
 
           break;
         default:

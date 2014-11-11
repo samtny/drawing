@@ -25,9 +25,9 @@ var drawd = function (req, res) {
     res.end(body);
   };
 
-  drawd.doCommand = function (commandString) {
+  drawd.execute = function (input) {
     try {
-      var explode = commandString.toString().trim().split(' '),
+      var explode = input.toString().trim().split(' '),
         command = explode[0].toUpperCase(),
         args = explode.slice(1);
 
@@ -65,7 +65,7 @@ var drawd = function (req, res) {
   };
 
   // original idea here; https://gist.github.com/rpflorence/701407
-  drawd.serveFile = function (filename) {
+  drawd.serve = function (filename) {
     fs.exists(filename, function(exists) {
       if(!exists) {
         drawd.respond('404 Not Found\n', 404, 'text/plain');
@@ -94,7 +94,7 @@ var drawd = function (req, res) {
 
         break;
       default:
-        drawd.serveFile(path.join(process.cwd() + '/docroot', uri));
+        drawd.serve(path.join(process.cwd() + '/docroot', uri));
 
         break;
     }
@@ -103,7 +103,7 @@ var drawd = function (req, res) {
   drawd.post = function () {
     switch (uri) {
       case '/canvas':
-        req.on('data', drawd.doCommand);
+        req.on('data', drawd.execute);
 
         break;
       default:

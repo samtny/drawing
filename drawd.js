@@ -6,21 +6,21 @@ var
   Canvas = require('./lib/Canvas'),
   ToolBox = require('./lib/ToolBox'),
   DrawingError = require('./lib/DrawingError'),
+  st = require('st'),
+  mount = st({ path: __dirname + '/docroot', url: '/' }),
   canvas = null;
 
 var drawd = function (req, res) {
   var drawd = this,
     uri = url.parse(req.url).pathname,
-    toolbox = new ToolBox(),
-    fs = require('fs'),
-    path = require('path');
+    toolbox = new ToolBox();
 
   drawd.respond = function (body, code, ctype) {
     code = code || 200;
     ctype = ctype || 'application/json';
     body = ctype == 'application/json' ? JSON.stringify(body) : body;
 
-    res.writeHead(code, { 'Content-Type': ctype });
+    res.writeHead(code, {'Content-Type': ctype});
     res.end(body);
   };
 
@@ -63,27 +63,12 @@ var drawd = function (req, res) {
     }
   };
 
-  // original idea here; https://gist.github.com/rpflorence/701407
-  drawd.serve = function (filename) {
-    fs.exists(filename, function(exists) {
-      if(!exists) {
-        drawd.respond('404 Not Found\n', 404, 'text/plain');
+  drawd.serve = function () {
+    var stHandled = mount(req, res);
 
-        return;
-      }
-
-      if (fs.statSync(filename).isDirectory()) filename += '/index.html';
-
-      fs.readFile(filename, { encoding: 'utf8' }, function(err, file) {
-        if(err) {
-          drawd.respond(err + '\n', 500, 'text/plain');
-
-          return;
-        }
-
-        drawd.respond(file, 200, path.extname(filename) === '.html' ? 'text/html' : 'text/plain', true);
-      });
-    });
+    if (!stHandled) {
+      drawd.respond('Not a static file', 400, 'text/plain');
+    }
   };
 
   drawd.get = function () {
@@ -93,7 +78,11 @@ var drawd = function (req, res) {
 
         break;
       default:
-        drawd.serve(path.join(process.cwd() + '/docroot', uri));
+        if (req.url === '/') {
+          req.url = '/index.html';
+        }
+
+        drawd.serve();
 
         break;
     }
